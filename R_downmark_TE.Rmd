@@ -1,0 +1,67 @@
+---
+title: "Using CKAN for extraction information in R"
+output: html_notebook
+---
+
+What is CKAN and how do I get information into R?
+If you consider yourself a budding data scientist, an explorer of a brave new world where data is ubiquitous then there are a few things you will need to do, one of which is access data from the web. One of the ways that we can get information from the way when using R is through a Web API; a Web API is a gate, an Application Programming Interface. The API is the ‘thing’ that allows different data sets to escape from the yard with the correct keys. It’s an agreement between an enterprise and the applications that use it.
+
+CKAN is
+This is where we get specific, the enterprise for us is CKAN and the application is R. CKAN is Comprehensive Knowledge Archive Network, it is an open-source open data portal for the storage and distribution of data. CKAN is used by governments at all levels internationally along with universities and some private enterprises.
+
+Looking, Looking, Looking…
+Now we have a question, let’s say it relates to the department of foreign affairs and trade and the portfolio budget statements (PBS) for Australia. To get this we will have to go to the government data website [link] (https://data.gov.au) site to see what they have. There are plenty of results but we also know that we are going to analyse the data in R. There is a better way to get the information straight into R. First there are a few things we will have to do.
+
+The Set Up
+The R packages you will need for this are
+
+```{r}
+#installing packages that I didnt have.
+#install.packages("remotes")
+#remotes::install_github("ropensci/ckanr")
+
+library(tidyverse)
+library(ckanr)
+library(jsonlite)
+library(readxl)
+library(curl)
+library(readxl)
+```
+```{r}
+url_site <- "https://datosabiertos.mef.gob.pe/"
+ckanr_setup(url = url_site)
+ckanr_setup(url = url_site)
+
+#this doesnt work. Probably they havent set up tables as group lists.
+group_list(as = "table") 
+
+#this works
+package_list(as = "table")
+```
+```{r}
+package_show("balance-constructivo-de-gobierno-nacional-regionales-y-locales-2015-2019")
+```
+```{r}
+x <- resource_search(q = "name:Ley_presupuesto", limit = 5)
+x$results
+```
+```{r}
+url<-resource_show(id ="fe8340d3-2641-4132-b089-75afff26b159")
+url$url
+```
+```{r}
+setwd("/Users/paolorivas/Tranparencia_Economica") 
+
+url <- ("https://storage.googleapis.com/mef-peru/PresupuestoPublico/ProyectoLeyPresupuestoPublico2022.csv")
+destfile <- ("Presupuesto_publico_2022.csv")
+curl::curl_download(url, destfile)
+Presupuesto_publico_2022 <- read.table(destfile,  sep=";", header=TRUE)
+View(Presupuesto_publico_2022)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+https://mef.creainter.com.pe/
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
